@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Game</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        table {
+            margin: auto;
+            border-collapse: collapse;
+        }
+        td {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid black;
+            font-size: 20px;
+        }
+        input {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            border: none;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sudoku</h1>
+    <table id="sudokuGrid"></table>
+    <button onclick="checkSolution()">Check Solution</button>
+    
+    <script>
+        const initialGrid = [
+            [5, 3, 0, 0, 7, 0, 0, 0, 0],
+            [6, 0, 0, 1, 9, 5, 0, 0, 0],
+            [0, 9, 8, 0, 0, 0, 0, 6, 0],
+            [8, 0, 0, 0, 6, 0, 0, 0, 3],
+            [4, 0, 0, 8, 0, 3, 0, 0, 1],
+            [7, 0, 0, 0, 2, 0, 0, 0, 6],
+            [0, 6, 0, 0, 0, 0, 2, 8, 0],
+            [0, 0, 0, 4, 1, 9, 0, 0, 5],
+            [0, 0, 0, 0, 8, 0, 0, 7, 9]
+        ];
+
+        function createGrid() {
+            const table = document.getElementById("sudokuGrid");
+            for (let i = 0; i < 9; i++) {
+                const row = document.createElement("tr");
+                for (let j = 0; j < 9; j++) {
+                    const cell = document.createElement("td");
+                    if (initialGrid[i][j] !== 0) {
+                        cell.innerText = initialGrid[i][j];
+                    } else {
+                        const input = document.createElement("input");
+                        input.setAttribute("type", "number");
+                        input.setAttribute("min", "1");
+                        input.setAttribute("max", "9");
+                        input.setAttribute("maxlength", "1");
+                        cell.appendChild(input);
+                    }
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+        }
+
+        function checkSolution() {
+            const grid = [];
+            const rows = document.querySelectorAll("tr");
+            for (let row of rows) {
+                const cols = row.querySelectorAll("td");
+                const gridRow = [];
+                for (let cell of cols) {
+                    const input = cell.querySelector("input");
+                    gridRow.push(input ? parseInt(input.value) || 0 : parseInt(cell.innerText));
+                }
+                grid.push(gridRow);
+            }
+
+            if (isValidSudoku(grid)) {
+                alert("Congratulations! You've solved the Sudoku!");
+            } else {
+                alert("The solution is incorrect. Please try again.");
+            }
+        }
+
+        function isValidSudoku(grid) {
+            for (let i = 0; i < 9; i++) {
+                const row = new Set();
+                const col = new Set();
+                const box = new Set();
+                for (let j = 0; j < 9; j++) {
+                    const _row = grid[i][j];
+                    const _col = grid[j][i];
+                    const _box = grid[3 * Math.floor(i / 3) + Math.floor(j / 3)][3 * (i % 3) + (j % 3)];
+                    
+                    if (_row !== 0) {
+                        if (row.has(_row)) return false;
+                        row.add(_row);
+                    }
+                    if (_col !== 0) {
+                        if (col.has(_col)) return false;
+                        col.add(_col);
+                    }
+                    if (_box !== 0) {
+                        if (box.has(_box)) return false;
+                        box.add(_box);
+                    }
+                }
+            }
+            return true;
+        }
+
+        window.onload = createGrid;
+    </script>
+</body>
+</html>
